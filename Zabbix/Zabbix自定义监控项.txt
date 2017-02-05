@@ -1,0 +1,40 @@
+自定义监控项：
+1、添加用户自定义参数：
+[root@zb01 etc]# cat /application/zabbix/etc/zabbix_agentd.conf.d/nginx.conf 
+UserParameter=nginx.active,/usr/bin/curl -s http://status.etest.org/ngx_status|awk 'NR==1{print $3}'
+
+2、重启zabbix-agent服务
+
+3、在server端使用zabbix_get测试获取
+zabbix_get -s 172.16.1.81 -p 10050 -k "nginx.active"
+
+4、在web界面创建item
+
+自定图形：
+自定义screen；
+自定义map:可以做架构的图
+
+作业：
+    1.网络监控  Smokeping部署
+	2.zabbix乱点(都点一遍，知道哪个页面都是干啥的)
+	3.下次分享 Piwik流量分析系统
+
+
+关于监控项通知：（为了节省短信成本，同时也要达到内容清晰）
+
+Default subject 
+状态:{TRIGGER.STATUS}
+--仅保留监控项状态
+Default message
+主机：({HOST.NAME1}监控项：{ITEM.KEY1}): {ITEM.VALUE1}
+--监控级别去掉，因为问题就要处理，(前提报警问题设置合理)
+
+
+
+
+
+
+
+
+
+
