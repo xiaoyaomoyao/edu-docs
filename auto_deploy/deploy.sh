@@ -1,4 +1,5 @@
 #!/bin/bash
+#readme:重点是软链接以及部署的思路
 
 . /etc/init.d/functions
 
@@ -6,6 +7,7 @@
 NODE_LIST="172.16.1.8 172.16.1.7"
 GROUP1_LIST="172.16.1.8"        #一般来讲取名预热节点，就一个机器。
 GROUP2_LIST="172.16.1.7"
+ROLLBACK_LIST="172.16.1.8 172.16.1.7"
 
 #env
 SHELL_NAME="deploy.sh"
@@ -28,7 +30,7 @@ TMP_DIR="/deploy/tmp"
 TAR_DIR="/deploy/tar"
 
 usage(){
-    echo $"Usage: $0 [deploy|rollback]"
+    echo $"Usage: $0 { deploy | rollback [ list | version ] }"
 }
 
 writelog(){
@@ -152,8 +154,26 @@ cluster_node_in(){
     echo "cluster_node_in"
 }
 
+rollback_fun(){
+    echo "ROLLBACK"
+#这里最好加上判断，如果输入的版本错误或者没有输入参数的处理
+    for node in ${ROLLBACK_LIST}
+	do
+	  ssh $node "rm -rf /webroot/${PRO_NAME} && ln -s /opt/webroot/$1 /webroot/${PRO_NAME}"
+	done
+}
+
 rollback(){
     echo "rollback"
+#最好加上参数判断是否有
+    if [ -z $1 ];then
+	  echo "hehe" && shell_unlock && exit
+	fi
+    case $1 in
+      list)
+        ls -l /opt/webroot/*.tar.gz
+      *)
+	    rollback_fun $1
 }
 
 main(){
@@ -161,6 +181,7 @@ main(){
     echo "Deploy is running" && exit 1
   fi
   DEPLOY_METHOD=$1
+  ROLLBACK_VER=$2
   case "$1" in
     deploy)
       shell_lock;
@@ -181,7 +202,7 @@ main(){
       ;;
     rollback)
       shell_lock;
-      rollback;
+      rollback $ROLLBACK_VER;
       shell_unlock;
       ;;
     *)

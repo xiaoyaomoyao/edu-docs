@@ -1,0 +1,23 @@
+正常回滚：
+1、列出回滚版本
+2、目标服务器移除集群
+3、执行回滚
+4、重启和测试
+4、加入集群
+
+重大BUG紧急：
+1、列出回滚版本
+2、执行回滚（重启）
+
+更紧急流程：
+1、回滚上个版本
+
+gitlab和部署和回滚
+安装：
+https://www.unixhot.com/article/48
+去掉注册功能；
+git更改配置之后(比如修改url地址)，需要重新配置，命令：gitlab-ctl reconfigure
+git查看版本号git show|grep commit|cur -d ' ' -f2
+
+API_VERL=$(git show|grep commit|cur -d ' ' -f2)
+echo ${API_VERL:0:6}     #获取前六位
